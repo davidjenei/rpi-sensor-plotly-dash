@@ -52,11 +52,24 @@ services:
     build: ./w1
     volumes:
       - ./data/temp.db:/data/temp.db
-      - /sys:/host_sys
+    environment:
+      - SQLITE_DB=/data/temp.db
+    restart: unless-stopped
 
   bme280:
     container_name: bme280
     build: ./bme280
     volumes:
       - ./data/temp.db:/data/temp.db
-      - /sys:/host_sys
+    environment:
+      - SQLITE_DB=/data/temp.db
+    restart: unless-stopped
+
+  pir:
+    container_name: pir
+    build: ./pir
+    volumes:
+      - ./data/temp.db:/data/temp.db
+    environment:
+      - SQLITE_DB=/data/temp.db
+    restart: unless-stopped
