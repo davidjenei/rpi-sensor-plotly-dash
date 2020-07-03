@@ -1,0 +1,57 @@
+upstream dash {
+  server dash:40080;
+}
+
+server {
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+
+  server_name ${NGINX_HOSTNAME};
+  root /var/www/${NGINX_HOSTNAME}/public;
+
+  # SSL
+  ssl_certificate /etc/letsencrypt/live/${NGINX_HOSTNAME}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${NGINX_HOSTNAME}/privkey.pem;
+
+  # security
+  include security.conf;
+
+  index index.html;
+
+  # general
+  include general.conf;
+
+  location / {
+     proxy_pass http://dash;
+     include proxy.conf;
+     proxy_redirect off;
+  }
+}
+
+# subdomains redirect
+server {
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+
+  server_name www.${NGINX_HOSTNAME};
+
+  # SSL
+  ssl_certificate /etc/letsencrypt/live/${NGINX_HOSTNAME}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${NGINX_HOSTNAME}/privkey.pem;
+
+  return 301 https://${NGINX_HOSTNAME}$request_uri;
+}
+
+# HTTP redirect
+server {
+  listen 80;
+  listen [::]:80;
+
+  server_name .${NGINX_HOSTNAME};
+
+  include letsencrypt.conf;
+
+  location / {
+    return 301 https://${NGINX_HOSTNAME}$request_uri;
+  }
+}

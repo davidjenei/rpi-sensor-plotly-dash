@@ -1,0 +1,10 @@
+# Place "config.txt" changes (dtparam, dtoverlay, disable_overscan, etc.) in
+# this file. Please refer to the README file for a description of the various
+# configuration files on the boot partition.
+
+dtoverlay=w1-gpio,pullup=1,gpiopin=4
+
+dtoverlay=i2c-sensor,bme280,addr=0x76
+dtparam=i2c_arm=on,i2c_baudrate=400000
+
+dtoverlay=ads1015,cha_enable,chb_enable,cha_cfg=0,cha_gain=2
