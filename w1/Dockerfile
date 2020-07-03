@@ -1,10 +1,6 @@
-FROM python:3-alpine
+FROM alpine
 
-WORKDIR /usr/src/app
-
-#COPY requirements.txt ./
-#RUN pip install --no-cache-dir -r requirements.txt
-
+RUN apk add --no-cache sqlite
 COPY . .
 
-CMD [ "python", "-u","./w1.py" ]
+CMD ["/w1.sh"]
