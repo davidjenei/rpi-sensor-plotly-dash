@@ -11,13 +11,13 @@ from datetime import timedelta as delta
 from flask import Flask
 server = Flask(__name__)
 
-server.secret_key = os.environ.get('secret_key', 'secret')
 db = os.environ.get('SQLITE_DB', 'temp.db')
 
 con = sqlite3.connect(db, check_same_thread=False)
 
 app = dash.Dash('app', server=server)
 
+# Content-Security-Policy no-eval -> Download to assets
 dcc._js_dist[0]['external_url'] = 'https://cdn.plot.ly/plotly-basic-latest.min.js'
 
 app.layout = html.Div([
@@ -60,12 +60,12 @@ app.layout = html.Div([
                Input('my-date', 'end_date')])
 def update_graph(selected_dropdown_value, start, end):
     df = pd.read_sql_query(
-        "SELECT * FROM adatok WHERE ido > datetime('{}') AND ido < datetime('{}')".format(start, end), con)
-    dff = df[df['homero'] == selected_dropdown_value]
+        "SELECT * FROM adatok WHERE ido > datetime('{}') AND ido < datetime('{}') AND homero = '{}'".format(start, end,selected_dropdown_value), con)
+    #dff = df[df['homero'] == selected_dropdown_value]
     return {
         'data': [{
-            'x': dff.ido,
-            'y': dff.fok,
+            'x': df.ido,
+            'y': df.fok,
             'line': {
                 'width': 3,
                 'shape': 'line'
@@ -81,7 +81,5 @@ def update_graph(selected_dropdown_value, start, end):
         }
     }
 
-
 if __name__ == '__main__':
     app.run_server(debug=True, port=40080, host='0.0.0.0')
-
