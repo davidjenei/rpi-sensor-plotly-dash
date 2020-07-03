@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-pandas 
 
 #COPY requirements.txt .
 #RUN pip3 install --user -r requirements.txt
+RUN pip3 install dash
 
 COPY . .
 
